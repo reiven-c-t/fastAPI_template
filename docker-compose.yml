@@ -1,0 +1,88 @@
+version: '3'
+services:
+  backend:
+    build: .
+    container_name: fast_api_server
+    tty: true
+    stdin_open: true
+    privileged: true
+#    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app
+    platform: linux/x86_64
+    depends_on:
+      - db
+    networks:
+      - app-net
+  db:
+    image: mysql:latest
+    container_name: fast_api_db
+    platform: linux/x86_64
+    env_file:
+      - .env
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    tty: true
+    stdin_open: true
+    privileged: true
+#    restart: unless-stopped
+    command: mysqld --innodb_use_native_aio=0
+    volumes:
+      - ./data/mysql_data:/var/lib/mysql
+    networks:
+      - app-net
+  worker:
+    build:
+      context: ./
+      dockerfile: worker.Dockerfile
+    platform: linux/x86_64
+    container_name: celery_worker
+    depends_on:
+      - redis
+    command:
+      - celery
+      - --app=tasks.demo.celery
+      - --loglevel=info
+    env_file:
+      - .env
+    tty: true
+    stdin_open: true
+    privileged: true
+    networks:
+      - app-net
+  dashboard:
+    build:
+      context: ./
+      dockerfile: worker.Dockerfile
+    platform: linux/x86_64
+    container_name: celery_dashboard
+    depends_on:
+      - redis
+    command:
+      - celery
+      - --app=tasks.demo.celery
+      - flower
+      - --port=5555
+    ports:
+      - 5556:5555
+    env_file:
+      - .env
+    tty: true
+    stdin_open: true
+    privileged: true
+    networks:
+      - app-net
+  redis:
+    image: redis:latest
+    volumes:
+      - ./data/redis_data:/data
+    container_name: redis_server
+    networks:
+      - app-net
+networks:
+  app-net:
+    driver: bridge
