@@ -240,4 +240,4 @@ class DBGen:
 
 
 if __name__ == "__main__":
-    DBGen("/Users/reiven/Documents/Python/fastAPITemplate/server/models/dummy.py").main()
+    DBGen("server/models/dummy.py").main()
