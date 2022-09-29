@@ -43,10 +43,12 @@ services:
     container_name: celery_worker
     depends_on:
       - redis
+    volumes:
+      - ./server:/app
     command:
       - celery
-      - --app=tasks.demo.celery
-      - --loglevel=info
+      - --app=tasks.demo.demo_task
+      - worker
     env_file:
       - .env
     tty: true
@@ -60,11 +62,13 @@ services:
       dockerfile: worker.Dockerfile
     platform: linux/x86_64
     container_name: celery_dashboard
+    volumes:
+      - ./server:/app
     depends_on:
       - redis
     command:
       - celery
-      - --app=tasks.demo.celery
+      - --app=tasks.demo.demo_task
       - flower
       - --port=5555
     ports:

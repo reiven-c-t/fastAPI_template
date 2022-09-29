@@ -25,6 +25,8 @@ python-jose = "^3.3.0"
 mysqlclient = "^2.1.0"
 bcrypt = "^3.2.0"
 celery = "^5.2.7"
+flower = "^1.2.0"
+redis = "^4.3.4"
 
 [tool.poetry.dev-dependencies]
 ipython = "^8.0.1"

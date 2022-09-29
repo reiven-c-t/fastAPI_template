@@ -3,7 +3,7 @@ from typing import Any, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from server.tasks.demo.demo_task import celery, demo_function
+from tasks.demo.demo_task import celery, demo_function
 
 router = APIRouter()
 
